@@ -5,10 +5,14 @@ import TodoItem from "@/components/todoitem";
 
 const getTodos = () => {
   return prisma.todo.findMany();
-}
+};
+const toggleTodo = async (id: string, completed: boolean) => {
+  "use server";
+  await prisma.todo.update({ where: { id }, data: { completed } });
+};
 
 export default async function Home() {
-  const todos = await getTodos()
+  const todos = await getTodos();
   return (
     <>
       <header className="flex justify-between">
@@ -22,7 +26,15 @@ export default async function Home() {
       </header>
       <ul className="pl-4">
         {todos.map((todo) => {
-          return <TodoItem id={todo.id} completed={todo.completed} title={todo.title}/>;
+          return (
+            <TodoItem
+              key={todo.id}
+              toggleTodo={toggleTodo}
+              id={todo.id}
+              completed={todo.completed}
+              title={todo.title}
+            />
+          );
         })}
       </ul>
     </>
